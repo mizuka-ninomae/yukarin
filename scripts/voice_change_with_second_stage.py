@@ -28,7 +28,8 @@ parser.add_argument('--threshold', '-t', type=float)
 parser.add_argument('--f0_trans_model_dir', '-ftmd', type=Path)
 parser.add_argument('--f0_trans_model_iteration', '-ftmi', type=int)
 parser.add_argument('--f0_trans_config', '-ftc', type=Path)
-parser.add_argument('--super_resolution_model', '-srm', type=Path)
+parser.add_argument('--super_resolution_model_dir', '-srmd', type=Path)
+parser.add_argument('--super_resolution_model_iteration', '-srmi', type=Path)
 parser.add_argument('--super_resolution_config', '-src', type=Path)
 parser.add_argument('--input_statistics', '-is', type=Path)
 parser.add_argument('--target_statistics', '-ts', type=Path)
@@ -46,7 +47,8 @@ voice_changer_config: Path = arguments.voice_changer_config
 input_wave_scale: float = arguments.input_wave_scale
 filter_size: int = arguments.filter_size
 threshold: float = arguments.threshold
-super_resolution_model: Path = arguments.super_resolution_model
+super_resolution_model_dir: Path = arguments.super_resolution_model_dir
+super_resolution_model_iteration: Path = arguments.super_resolution_model_iteration
 super_resolution_config: Path = arguments.super_resolution_config
 f0_trans_model_dir: Path = arguments.f0_trans_model_dir
 f0_trans_model_iteration: int = arguments.f0_trans_model_iteration
@@ -182,7 +184,12 @@ def main():
 
     # super resolution
     sr_config = create_sr_config(super_resolution_config)
-    super_resolution = SuperResolution(sr_config, super_resolution_model, gpu=gpu)
+    super_resolution_model = _get_predictor_model_path(super_resolution_model_dir, super_resolution_model_iteration)
+    super_resolution = SuperResolution(
+        sr_config,
+        super_resolution_model,
+        gpu=gpu
+    )
     print(f'Loaded super resolution model "{super_resolution_model}"')
 
     # dataset's test
